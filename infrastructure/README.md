@@ -1,10 +1,11 @@
-# infrastructure/ — Lab 1 Part B Terraform skeleton
+# infrastructure/
 
-Skeleton for Task B1. **It is empty on purpose**: every file declares its
-variables and outputs, and `main.tf` lists the resources you owe, but no
-resources are written for you.
+Terraform for the NorthStar platform. Lab 1 modules are the VPC, bucket,
+MLEngineer role, and SageMaker domain. Lab 2 extends those modules and adds
+`modules/glue/` and `modules/feature_store/`. The root README has the
+end-to-end pipeline.
 
-Verify it starts clean before you add anything:
+`terraform fmt` and `terraform validate` must pass on submit:
 
 ```bash
 cd environments/dev
@@ -13,18 +14,15 @@ terraform fmt -check -recursive ../..   # no output = pass
 terraform validate                      # exits 0
 ```
 
-Both must still pass when you submit — that is 5 of the 15 points in B1.
-
 ## Layout
 
 ```
-modules/vpc/        aws_vpc, aws_subnet (public only), aws_internet_gateway,
-                    aws_route_table, aws_route_table_association, aws_security_group
-modules/storage/    aws_s3_bucket + public_access_block, versioning,
-                    server_side_encryption_configuration, aws_s3_object x4
-modules/iam/        one aws_iam_role (MLEngineer trust), one aws_iam_policy,
-                    one aws_iam_role_policy_attachment
-modules/sagemaker/  aws_sagemaker_domain, aws_sagemaker_user_profile
+modules/vpc/            public subnet, private subnet, NAT gateway, routes, SageMaker security group
+modules/storage/        data bucket, encryption, versioning, five lifecycle rules
+modules/iam/            MLEngineer, DataEngineer, ModelMonitor
+modules/sagemaker/      domain in the private subnet, MLEngineer user profile
+modules/glue/           catalog, raw crawler, network connection, transform job, feature job
+modules/feature_store/  customer feature group, online store and offline store
 ```
 
 Each module contains **only** its designated resources — that is graded.

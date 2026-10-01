@@ -1,0 +1,31 @@
+Pre-Lab 3 — Bedrock Model Access Verification
+Account: 998631802064
+Region: us-east-1
+Date: 2026-09-29
+
+Anthropic use-case form: submitted (put_use_case_for_model_access HTTP 201; get_use_case_for_model_access HTTP 200)
+Claude Haiku 4.5 agreement: AVAILABLE
+Inference profile used: us.anthropic.claude-haiku-4-5-20251001-v1:0 (ACTIVE)
+
+========================================
+Step 4 — invocation verification
+========================================
+PASS  Titan embeddings        dim=1024
+PASS  Claude Haiku 4.5        'OK'
+
+========================================
+Per-minute quotas (both models)
+aws service-quotas list-service-quotas --service-code bedrock --region us-east-1
+Columns: QuotaName, Value, Adjustable
+========================================
+Cross-region model inference requests per minute for Anthropic Claude Haiku 4.5         50.0       True
+Cross-region model inference tokens per minute for Anthropic Claude Haiku 4.5           5000000.0  True
+Global cross-region model inference tokens per minute for Anthropic Claude Haiku 4.5    5000000.0  True
+Global cross-region model inference requests per minute for Anthropic Claude Haiku 4.5  50.0       True
+On-demand model inference requests per minute for Amazon Titan Text Embeddings V2       600.0      False
+On-demand model inference tokens per minute for Amazon Titan Text Embeddings V2         300000.0   False
+
+========================================
+Quota increases
+========================================
+No quota increases were requested. Lab 3 Track B embeds a 4,000-word corpus (about 5,200 tokens, roughly 21 chunk requests per full index) a few dozen times during development, and makes a few hundred Claude generation calls for RAGAS. A realistic peak is about three full re-indexes in one minute (~63 Titan requests/min and ~16,000 tokens/min) and a RAGAS loop of about 10 Haiku calls/min (~1,750 tokens each, ~17,500 tokens/min). This account already has Titan on-demand quotas of 600 requests/min and 300,000 tokens/min, and Claude Haiku 4.5 cross-region quotas of 50 requests/min and 5,000,000 tokens/min on the us. profile. That is about 10x the embedding request peak and 5x the generation request peak, with token headroom well above either workload. A 30x spike would exceed Titan's request and token caps and Haiku's 50 requests/min cap, but that spike is not this lab: it would mean re-embedding the corpus about 60 times in one minute, or about 300 generation calls in one minute, for a workload that should cost under $2. Requesting that capacity cannot be defended. Titan's on-demand quotas are also marked Adjustable: False, so they cannot be raised through Service Quotas. Calls use the us. Haiku 4.5 inference profile so inference stays in US regions.

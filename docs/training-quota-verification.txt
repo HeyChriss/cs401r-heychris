@@ -1,0 +1,55 @@
+Pre-Lab 4 — SageMaker Training Quota Verification
+Account: 998631802064
+Region: us-east-1
+Date: 2026-09-29
+Rechecked: 2026-09-30
+
+========================================
+Step 1 — default vs applied
+Quota code L-611FA074 (ml.m5.large for training job usage)
+========================================
+AWS default (get-aws-default-service-quota): 0.0
+Applied to this account (get-service-quota), 2026-09-29: 0.0
+Applied to this account (get-service-quota), 2026-09-30: 20.0
+
+Step 4 check, current applied value:
+20.0
+
+The applied value is non-zero. Lab 4 can start an ml.m5.large training job. AWS applied 20, which is more than the 2 that was requested.
+
+========================================
+Step 2 — on-demand increase request
+aws service-quotas request-service-quota-increase
+  --service-code sagemaker --quota-code L-611FA074 --desired-value 2
+========================================
+Id:        cd8f8751d6b44e4f9926d70ae4a51b96Ypjyw4Ko
+Requested: 2.0
+Status:    CASE_OPENED
+Case:      179072817500432
+
+The support case is still CASE_OPENED. The applied quota is already 20.0, and that applied value is what a training job checks.
+
+========================================
+Fallback quota — ml.m5.large spot training
+Quota code L-29688C85
+========================================
+AWS default: 4.0
+Applied to this account, 2026-09-29: 0.0
+Applied to this account, 2026-09-30: 10.0
+
+A request for 2 was rejected:
+IllegalArgumentException: You must provide a quota value greater than the default quota value of 4.0
+
+Requested 5, the smallest value the API accepts:
+Id:        437219b709dc42c48dd079cb1455df2b0ogh732n
+Requested: 5.0
+Status:    CASE_CLOSED
+Case:      179072804200950
+Applied:   10.0
+
+On 2026-09-29, a paginator over every SageMaker quota whose name contains "training job usage" found no applied value above 0. On 2026-09-30 the two quotas above are 20.0 and 10.0.
+
+========================================
+What was requested, and why
+========================================
+I requested an on-demand ml.m5.large training quota of 2. Lab 4's pipeline needs one concurrent training job; 2 leaves room to start a second job while the first is still running. I did not ask for a larger number. The course dataset trains in under two minutes, each run costs roughly $0.10–$0.30, and an approved quota bills $0 until a job is actually launched. A request of 20 would be capacity this workload cannot defend. AWS later applied 20 anyway; the number I can justify is still 2. If that on-demand request had still been 0 when Lab 4 opens, the fallback was spot ml.m5.large. The published AWS default for spot is 4, but the value applied on this account was 0, so spot would have failed the same way until it was raised. Service Quotas will not accept a spot request of 2, because any request must be greater than the default of 4, so I requested 5 (case 179072804200950). That is one job plus overlap, which is the same reason as the on-demand request of 2; 5 is only the smallest integer the API allows. That case is now CASE_CLOSED and the applied spot quota is 10. A spot job can be interrupted, so that path would need checkpointing and retry. Interruption risk is low for a job under two minutes on 10,000 rows. It is not needed for Lab 4, because the on-demand quota is already 20.

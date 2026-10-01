@@ -3,11 +3,12 @@
 # hidden Studio EFS volume; Retain leaves it behind and destroy hangs.
 
 resource "aws_sagemaker_domain" "this" {
-  domain_name             = "${var.project}-${var.environment}-domain"
-  auth_mode               = "IAM"
-  vpc_id                  = var.vpc_id
-  subnet_ids              = var.subnet_ids
-  app_network_access_type = "PublicInternetOnly"
+  domain_name = "${var.project}-${var.environment}-domain"
+  auth_mode   = "IAM"
+  vpc_id      = var.vpc_id
+  subnet_ids  = var.subnet_ids
+  # VpcOnly sends Studio egress through the NAT gateway, not the internet gateway.
+  app_network_access_type = "VpcOnly"
 
   default_user_settings {
     execution_role  = var.execution_role_arn

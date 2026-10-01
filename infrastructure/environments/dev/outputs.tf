@@ -8,6 +8,11 @@ output "public_subnet_id" {
   value       = module.vpc.public_subnet_id
 }
 
+output "private_subnet_id" {
+  description = "ID of the private subnet"
+  value       = module.vpc.private_subnet_id
+}
+
 output "s3_bucket_name" {
   description = "Name of the data bucket"
   value       = module.storage.bucket_name
@@ -16,6 +21,41 @@ output "s3_bucket_name" {
 output "ml_engineer_role_arn" {
   description = "ARN of the MLEngineer role"
   value       = module.iam.ml_engineer_role_arn
+}
+
+output "data_engineer_role_arn" {
+  description = "ARN of the DataEngineer role"
+  value       = module.iam.data_engineer_role_arn
+}
+
+output "model_monitor_role_arn" {
+  description = "ARN of the ModelMonitor role"
+  value       = module.iam.model_monitor_role_arn
+}
+
+output "glue_database_name" {
+  description = "Glue Data Catalog database name"
+  value       = module.glue.database_name
+}
+
+output "glue_crawler_name" {
+  description = "Name of the raw-data crawler"
+  value       = module.glue.crawler_name
+}
+
+output "glue_transform_job_name" {
+  description = "Name of the transform ETL job"
+  value       = module.glue.transform_job_name
+}
+
+output "glue_feature_job_name" {
+  description = "Name of the feature engineering ETL job"
+  value       = module.glue.feature_job_name
+}
+
+output "feature_group_name" {
+  description = "Name of the customer feature group"
+  value       = module.feature_store.feature_group_name
 }
 
 output "sagemaker_domain_id" {

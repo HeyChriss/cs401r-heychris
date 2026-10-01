@@ -15,3 +15,9 @@ variable "prefixes" {
   type        = list(string)
   default     = ["raw/", "processed/", "features/", "artifacts/"]
 }
+
+variable "enable_lifecycle_rules" {
+  description = "Attach the Lab 2 expiration rules. Set false for LocalStack."
+  type        = bool
+  default     = true
+}
