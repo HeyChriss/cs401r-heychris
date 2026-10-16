@@ -50,9 +50,25 @@ Wait until each crawler state returns to `READY` and each job run is `SUCCEEDED`
 
 `bash scripts/verify-lab2.sh` checks the same assertions the rubric uses.
 
+## Lab 3
+
+Track B. The churn model reuses the Lab 2 feature group. Offer generation reads `northstar-policy-docs/` locally. Nothing in Track B creates an endpoint.
+
+```bash
+python churn_training_skeleton.py \
+  --artifacts-bucket "northstar-dev-data-${ACCOUNT}" \
+  --mlflow-arn "<mlflow-app-arn>" \
+  --output-data-dir docs/lab3-evidence
+
+python evaluation_harness.py --track B
+bash scripts/collect-lab3-evidence.sh --track B
+```
+
+`docs/bedrock-access-verification.txt` is the Pre-Lab 3 check. The design write-up is `docs/lab3-model-design.md`.
+
 ## Teardown
 
-The NAT gateway bills about $0.045 per hour until it is deleted. `terraform destroy` alone leaves Glue network interfaces, the Studio EFS volume, and other resources behind.
+The NAT gateway bills about $0.045 per hour until it is deleted. `terraform destroy` alone leaves Glue network interfaces, the Studio EFS volume, and other resources behind. Lab 3 adds SageMaker endpoints and, if one was created, an MLflow tracking server at $0.60 per hour. The serverless MLflow app is free and is kept for later labs.
 
 ```bash
 bash scripts/teardown-lab2.sh

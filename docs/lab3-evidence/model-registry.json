@@ -1,0 +1,62 @@
+{
+  "ModelPackageGroupName": "northstar-churn-models",
+  "Versions": [
+    {
+      "ModelPackageArn": "arn:aws:sagemaker:us-east-1:998631802064:model-package/northstar-churn-models/3",
+      "ModelPackageVersion": 3,
+      "ModelApprovalStatus": "PendingManualApproval",
+      "CreationTime": "2026-10-15 18:12:24.010000-06:00",
+      "ModelPackageDescription": "Churn model trained 2026-10-16",
+      "CustomerMetadataProperties": {
+        "auc_roc": "0.7701",
+        "auc_vs_baseline": "0.0476",
+        "baseline_auc": "0.7225",
+        "eval_timestamp": "2026-10-16T00:12:21.939224",
+        "lift_ci_high": "0.0662",
+        "lift_ci_low": "0.028",
+        "n_val_samples": "3000",
+        "positive_rate_val": "0.22",
+        "precision_top10": "0.73",
+        "recall_top10": "0.3318"
+      }
+    },
+    {
+      "ModelPackageArn": "arn:aws:sagemaker:us-east-1:998631802064:model-package/northstar-churn-models/2",
+      "ModelPackageVersion": 2,
+      "ModelApprovalStatus": "PendingManualApproval",
+      "CreationTime": "2026-10-15 18:11:57.377000-06:00",
+      "ModelPackageDescription": "Churn model trained 2026-10-16",
+      "CustomerMetadataProperties": {
+        "auc_roc": "0.7796",
+        "auc_vs_baseline": "0.0571",
+        "baseline_auc": "0.7225",
+        "eval_timestamp": "2026-10-16T00:11:55.463777",
+        "lift_ci_high": "0.076",
+        "lift_ci_low": "0.0388",
+        "n_val_samples": "3000",
+        "positive_rate_val": "0.22",
+        "precision_top10": "0.7267",
+        "recall_top10": "0.3303"
+      }
+    },
+    {
+      "ModelPackageArn": "arn:aws:sagemaker:us-east-1:998631802064:model-package/northstar-churn-models/1",
+      "ModelPackageVersion": 1,
+      "ModelApprovalStatus": "PendingManualApproval",
+      "CreationTime": "2026-10-15 18:09:48.905000-06:00",
+      "ModelPackageDescription": "Churn model trained 2026-10-16",
+      "CustomerMetadataProperties": {
+        "auc_roc": "0.7791",
+        "auc_vs_baseline": "0.0566",
+        "baseline_auc": "0.7225",
+        "eval_timestamp": "2026-10-16T00:09:46.658757",
+        "lift_ci_high": "0.0756",
+        "lift_ci_low": "0.037",
+        "n_val_samples": "3000",
+        "positive_rate_val": "0.22",
+        "precision_top10": "0.7067",
+        "recall_top10": "0.3212"
+      }
+    }
+  ]
+}

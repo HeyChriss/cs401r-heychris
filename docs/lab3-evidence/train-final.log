@@ -1,0 +1,94 @@
+python : C:\Users\chris\anaconda3\Lib\site-packages\pandas\core\computation\expressions.py:23: UserWarning: Pandas 
+requires version '2.10.2' or newer of 'numexpr' (version '2.8.7' currently installed).
+At C:\Users\chris\AppData\Local\Temp\ps-script-d433b84e-7451-4ecb-ba52-590ce187dc48.ps1:125 char:24
++ ... UTF8 = "1"; python -u churn_training_skeleton.py --artifacts-bucket n ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\chris\...tly installed).:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  from pandas.core.computation.check import NUMEXPR_INSTALLED
+C:\Users\chris\anaconda3\Lib\site-packages\pandas\core\arrays\masked.py:56: UserWarning: Pandas requires version 
+'1.4.2' or newer of 'bottleneck' (version '1.3.7' currently installed).
+  from pandas.core import (
+sagemaker.config INFO - Not applying SDK defaults from location: C:\ProgramData\sagemaker\sagemaker\config.yaml
+sagemaker.config INFO - Not applying SDK defaults from location: C:\Users\chris\AppData\Local\sagemaker\sagemaker\config.yaml
+C:\Users\chris\anaconda3\Lib\site-packages\sagemaker\__init__.py:86: SageMakerV2DeprecationWarning: You are using the 
+SageMaker Python SDK v2, which is on path of deprecation. v3 is the actively developed major version.
+See https://github.com/aws/sagemaker-python-sdk/blob/master/migration.md for the migration guide. Set 
+SAGEMAKER_SUPPRESS_V2_WARNING=1 to silence this warning.
+  warn_v2_deprecation()
+You are using the SageMaker Python SDK v2, which is on path of deprecation. v3 is the actively developed major version.
+See https://github.com/aws/sagemaker-python-sdk/blob/master/migration.md for the migration guide. Set 
+SAGEMAKER_SUPPRESS_V2_WARNING=1 to silence this warning.
+============================================================
+NorthStar Churn Prediction — Training Script
+============================================================
+Athena QueryExecutionId: 7a5e232f-72e2-4968-9ec2-672ef38f0cd6
+Loaded 9,999 rows from northstar-dev-customer-features
+Preprocessing 9,999 samples...
+  Positive class rate: 22.0%
+  Feature matrix shape: (9999, 11)
+
+Train: 6,999 | Validation: 3,000
+Train tiers: {'Silver': 2723, 'Bronze': 2458, 'Gold': 1181, 'Platinum': 637}
+Validation tiers: {'Silver': 1139, 'Bronze': 1071, 'Gold': 483, 'Platinum': 307}
+
+Training XGBoost with params: {
+  "objective": "binary:logistic",
+  "eval_metric": [
+    "logloss",
+    "auc"
+  ],
+  "max_depth": 6,
+  "eta": 0.1,
+  "min_child_weight": 5,
+  "subsample": 0.8,
+  "colsample_bytree": 0.8,
+  "scale_pos_weight": 3.544805194805195,
+  "seed": 42,
+  "verbosity": 1
+}
+[0]	train-logloss:0.66989	train-auc:0.77100	validation-logloss:0.67240	validation-auc:0.72163
+[25]	train-logloss:0.48291	train-auc:0.85875	validation-logloss:0.52282	validation-auc:0.77912
+[27]	train-logloss:0.47909	train-auc:0.86068	validation-logloss:0.52125	validation-auc:0.77908
+C:\Users\chris\Desktop\cs_401r\cs401r-heychris\churn_training_skeleton.py:551: DeprecationWarning: 
+datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to 
+represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+
+  "eval_timestamp": datetime.utcnow().isoformat(),
+── Evaluation Results ──────────────────────────────
+  precision_top10          : 0.7067  (threshold: 0.5000)  ✓ PASS
+  recall_top10             : 0.3212  (threshold: 0.2500)  ✓ PASS
+  auc_lift 95% CI          : [0.0370, 0.0756]  (must exclude 0)  ✓ PASS
+  All thresholds passed ✓
+Slice evaluation written to docs/lab3-evidence\slice-evaluation.csv
+C:\Users\chris\Desktop\cs_401r\cs401r-heychris\churn_training_skeleton.py:702: UserWarning: [18:09:46] WARNING: 
+C:\actions-runner\_work\xgboost\xgboost\src\c_api\c_api.cc:1553: Saving model in the UBJSON format as default.  You 
+can use a file extension: `json` or `ubj` to choose between formats.
+  model.save_model(model_path)
+
+✓ Model saved to model\model.xgb
+C:\Users\chris\Desktop\cs_401r\cs401r-heychris\churn_training_skeleton.py:715: DeprecationWarning: 
+datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to 
+represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  "training_date": datetime.utcnow().isoformat(),
+C:\Users\chris\Desktop\cs_401r\cs401r-heychris\churn_training_skeleton.py:729: DeprecationWarning: 
+datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to 
+represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  key = f"artifacts/models/{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}/model.xgb"
+C:\Users\chris\Desktop\cs_401r\cs401r-heychris\churn_training_skeleton.py:734: DeprecationWarning: 
+datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to 
+represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  ModelPackageDescription=f"Churn model trained {datetime.utcnow().date()}",
+2026/10/15 18:09:51 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at 
+C:\Users\chris\anaconda3\Lib\site-packages\mlflow\assistant\skills\instrumenting-with-mlflow-tracing\SKILL.md before 
+writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+2026/10/15 18:09:52 INFO mlflow.tracking.fluent: Experiment with name 'northstar-churn' does not exist. Creating a new 
+experiment.
+🏃 View run depth6-eta0.1 at: https://mlflow.sagemaker.us-east-1.app.aws/#/experiments/1/runs/a5da87a3df104a638d3a54b80639b50c
+🧪 View experiment at: https://mlflow.sagemaker.us-east-1.app.aws/#/experiments/1
+Logged run to northstar-churn
+
+============================================================
+Training complete. AUC-ROC: 0.7791
+============================================================
