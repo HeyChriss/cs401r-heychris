@@ -1,0 +1,97 @@
+===== CodePipeline executions: start, status, commit, execution id =====
+2026-10-30 21:59:35.246000-06:00	InProgress	60ffee03d09b6f50a1acec5e57ccfebfb980d9b5	3397e8d9-de6f-4434-aba5-210aecc3eccc
+2026-10-30 21:52:20.970000-06:00	Failed	733238a68cd591d139676e155843476cc435d657	7b25bbf5-d428-4466-8317-41771f606f0f
+2026-10-30 21:46:45.397000-06:00	Failed	1ecb7a01936cde16b40524d8b6c042db77d97785	11cfd590-40bd-4eaa-915e-98329a1153be
+2026-10-30 21:17:56.913000-06:00	Succeeded	1e8fa469a1f874d8fad0dff057d5cf5d04478f88	759fc7fd-3107-498d-bbff-8a8b71322aba
+2026-10-30 21:06:08.877000-06:00	Failed	8ae40defb84c3ecd6ed9250f279f101ff6ecb088	ae41d233-f150-4611-b958-4a42f78b0b7c
+2026-10-30 20:19:46.477000-06:00	Failed	22b1b4ac0df76bc80aa2b824915c82ceecc320fe	4515e12a-cc8a-46ae-9894-1ac9516370cf
+
+===== CodeBuild builds, newest first: start, status, commit, build id =====
+2026-10-30 21:59:40.888000-06:00	SUCCEEDED	60ffee03d09b6f50a1acec5e57ccfebfb980d9b5	northstar-ci:7fe07ea9-2c13-42f7-8e79-adf4d05e1ff3
+    SUBMITTED	SUCCEEDED
+    QUEUED	SUCCEEDED
+    PROVISIONING	SUCCEEDED
+    DOWNLOAD_SOURCE	SUCCEEDED
+    INSTALL	SUCCEEDED
+    PRE_BUILD	SUCCEEDED
+    BUILD	SUCCEEDED
+    POST_BUILD	SUCCEEDED
+    UPLOAD_ARTIFACTS	SUCCEEDED
+    FINALIZING	SUCCEEDED
+    COMPLETED	None
+    pytest: ============================== 28 passed in 0.48s ==============================
+    pytest: ============================== 19 passed in 0.43s ==============================
+    pytest: ======================== 21 passed, 4 warnings in 1.46s ========================
+2026-10-30 21:52:26.257000-06:00	FAILED	733238a68cd591d139676e155843476cc435d657	northstar-ci:f0cb6175-755a-42b4-9745-91aa51cc4a21
+    SUBMITTED	SUCCEEDED
+    QUEUED	SUCCEEDED
+    PROVISIONING	SUCCEEDED
+    DOWNLOAD_SOURCE	SUCCEEDED
+    INSTALL	SUCCEEDED
+    PRE_BUILD	SUCCEEDED
+    BUILD	FAILED
+    POST_BUILD	SUCCEEDED
+    UPLOAD_ARTIFACTS	SUCCEEDED
+    FINALIZING	SUCCEEDED
+    COMPLETED	None
+    pytest: ============================== 28 passed in 0.87s ==============================
+    pytest: ============================== 19 passed in 0.43s ==============================
+    pytest: =================== 1 failed, 20 passed, 3 warnings in 1.39s ===================
+2026-10-30 21:46:50.341000-06:00	FAILED	1ecb7a01936cde16b40524d8b6c042db77d97785	northstar-ci:cf81ccf6-e4cc-4dc3-9f27-ac9ee74deb26
+    SUBMITTED	SUCCEEDED
+    QUEUED	SUCCEEDED
+    PROVISIONING	SUCCEEDED
+    DOWNLOAD_SOURCE	SUCCEEDED
+    INSTALL	SUCCEEDED
+    PRE_BUILD	FAILED
+    FINALIZING	SUCCEEDED
+    COMPLETED	None
+    pytest: ============================== 28 passed in 0.88s ==============================
+    pytest: ========================= 1 failed, 19 passed in 0.46s =========================
+2026-10-30 21:18:01.582000-06:00	SUCCEEDED	1e8fa469a1f874d8fad0dff057d5cf5d04478f88	northstar-ci:2b29bdcb-f2e6-4345-a412-03474f57a08b
+    SUBMITTED	SUCCEEDED
+    QUEUED	SUCCEEDED
+    PROVISIONING	SUCCEEDED
+    DOWNLOAD_SOURCE	SUCCEEDED
+    INSTALL	SUCCEEDED
+    PRE_BUILD	SUCCEEDED
+    BUILD	SUCCEEDED
+    POST_BUILD	SUCCEEDED
+    UPLOAD_ARTIFACTS	SUCCEEDED
+    FINALIZING	SUCCEEDED
+    COMPLETED	None
+    pytest: ============================== 28 passed in 0.48s ==============================
+    pytest: ============================== 19 passed in 0.44s ==============================
+    pytest: ================== 20 passed, 1 skipped, 3 warnings in 1.31s ===================
+2026-10-30 21:06:13.756000-06:00	FAILED	8ae40defb84c3ecd6ed9250f279f101ff6ecb088	northstar-ci:5ea979a6-5b28-4962-9717-a34e3143f80b
+    SUBMITTED	SUCCEEDED
+    QUEUED	SUCCEEDED
+    PROVISIONING	SUCCEEDED
+    DOWNLOAD_SOURCE	SUCCEEDED
+    INSTALL	SUCCEEDED
+    PRE_BUILD	SUCCEEDED
+    BUILD	FAILED
+    POST_BUILD	SUCCEEDED
+    UPLOAD_ARTIFACTS	SUCCEEDED
+    FINALIZING	SUCCEEDED
+    COMPLETED	None
+    pytest: ============================== 28 passed in 0.88s ==============================
+    pytest: ============================== 19 passed in 0.43s ==============================
+2026-10-30 20:19:52.250000-06:00	FAILED	22b1b4ac0df76bc80aa2b824915c82ceecc320fe	northstar-ci:517e3e84-35f7-4ff4-bb5d-41adbc1037d2
+    SUBMITTED	SUCCEEDED
+    QUEUED	SUCCEEDED
+    PROVISIONING	SUCCEEDED
+    DOWNLOAD_SOURCE	SUCCEEDED
+    INSTALL	SUCCEEDED
+    PRE_BUILD	FAILED
+    FINALIZING	SUCCEEDED
+    COMPLETED	None
+    pytest: ============================== 26 passed in 0.78s ==============================
+    pytest: ==================================== ERRORS ====================================
+    pytest: =============================== 1 error in 0.33s ===============================
+
+===== SageMaker Pipeline executions: start, status, name =====
+2026-10-30 22:00:28.960000-06:00	Succeeded	codebuild-60ffee03
+2026-10-30 21:53:59.087000-06:00	Succeeded	codebuild-733238a6
+2026-10-30 21:18:50.358000-06:00	Succeeded	codebuild-1e8fa469
+2026-10-30 21:07:41.787000-06:00	Failed	codebuild-8ae40def
