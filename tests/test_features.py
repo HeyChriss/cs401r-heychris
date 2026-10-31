@@ -326,3 +326,8 @@ class TestFullFeatureSet:
             snapshot_date=SNAPSHOT_DATE,
         )
         assert "customer_id" in features.columns, "Output must include customer_id for joining"
+
+
+def test_deliberate_ci_failure_demo():
+    """Temporary. The next commit reverts this so CI halts in pre_build once."""
+    assert False, "deliberate Lab 4 CI failure demo"
