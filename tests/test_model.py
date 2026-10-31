@@ -459,7 +459,17 @@ class TestStoredMetricsGate:
         if metadata.get("auc_roc") is not None:
             champion = float(metadata["auc_roc"])
         else:
-            uri = described["ModelMetrics"]["ModelStatistics"]["S3Uri"]
+            metrics_block = described.get("ModelMetrics") or {}
+            # The API returns ModelQuality.Statistics. The SDK name ModelStatistics
+            # is the same object when it is present.
+            statistics = metrics_block.get("ModelStatistics") or (
+                (metrics_block.get("ModelQuality") or {}).get("Statistics")
+            ) or {}
+            uri = statistics.get("S3Uri")
+            assert uri, (
+                "Champion package has no metrics URI. RegisterModel must record "
+                "ModelMetrics, or CustomerMetadataProperties must include auc_roc."
+            )
             bucket, _, key = uri[len("s3://"):].partition("/")
             body = boto3.client("s3").get_object(Bucket=bucket, Key=key)["Body"].read()
             champion = float(json.loads(body)["auc_roc"])
