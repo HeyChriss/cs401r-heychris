@@ -93,6 +93,11 @@ def train_model(X_train: np.ndarray,
         "colsample_bytree": COLSAMPLE_BYTREE,
         "scale_pos_weight": scale_pos_weight,
         "seed": seed,
+        # Longer time since a purchase cannot lower the churn score. The CI
+        # check holds every other feature fixed and walks recency upward.
+        "monotone_constraints": "(" + ",".join(
+            "1" if name == BASELINE_FEATURE else "0" for name in FEATURE_COLUMNS
+        ) + ")",
         "verbosity": 1,
     }
     print(f"\nTraining XGBoost with params: {json.dumps(params)}")

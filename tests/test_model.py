@@ -424,3 +424,49 @@ class TestStoredMetricsGate:
             f"The reference dataset measures 22.0%. Check that your validation "
             f"split is stratified."
         )
+
+    def test_does_not_regress_against_champion(self, eval_metrics):
+        """Newest Approved package is the champion. PendingManualApproval is the candidate.
+
+        The warning is the record the build log keeps. pytest -rw prints it
+        even when the assertion passes.
+        """
+        import warnings
+
+        import boto3
+
+        candidate = eval_metrics.get("auc_roc")
+        assert candidate is not None, "auc_roc missing from evaluation metrics"
+        client = boto3.client("sagemaker", region_name="us-east-1")
+        listed = client.list_model_packages(
+            ModelPackageGroupName="northstar-churn-models",
+            ModelApprovalStatus="Approved",
+            SortBy="CreationTime",
+            SortOrder="Descending",
+            MaxResults=1,
+        )
+        packages = listed.get("ModelPackageSummaryList", [])
+        if not packages:
+            pytest.skip(
+                "No Approved package in northstar-churn-models. Approve a green "
+                "run before the final build so this comparison has a champion."
+            )
+        version = packages[0]["ModelPackageVersion"]
+        described = client.describe_model_package(
+            ModelPackageName=packages[0]["ModelPackageArn"],
+        )
+        metadata = described.get("CustomerMetadataProperties") or {}
+        if metadata.get("auc_roc") is not None:
+            champion = float(metadata["auc_roc"])
+        else:
+            uri = described["ModelMetrics"]["ModelStatistics"]["S3Uri"]
+            bucket, _, key = uri[len("s3://"):].partition("/")
+            body = boto3.client("s3").get_object(Bucket=bucket, Key=key)["Body"].read()
+            champion = float(json.loads(body)["auc_roc"])
+        warnings.warn(
+            f"champion v{version} auc={champion:.4f}; candidate auc={float(candidate):.4f}"
+        )
+        assert float(candidate) >= champion - 0.02, (
+            f"Candidate AUC {float(candidate):.4f} is more than 0.02 below "
+            f"champion v{version} AUC {champion:.4f}"
+        )

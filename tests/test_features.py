@@ -157,11 +157,8 @@ class TestRecencyFeatures:
         empty_txns = pd.DataFrame(columns=["customer_id", "purchase_date", "order_value"])
         customer_ids = pd.DataFrame({"customer_id": ["CUST-NODATA"]})
 
-        # TODO: Your function should handle customers with no transactions
-        # Expected behavior: return days_since_last_purchase = 999 (or configurable sentinel)
-        # features = compute_recency_features(empty_txns, SNAPSHOT_DATE, customer_ids)
-        # assert features.iloc[0]["days_since_last_purchase"] == 999
-        pass
+        features = compute_recency_features(empty_txns, SNAPSHOT_DATE, customer_ids)
+        assert features.iloc[0]["days_since_last_purchase"] == 999
 
 
 # ── Frequency Feature Tests ────────────────────────────────────────────────────
@@ -186,6 +183,26 @@ class TestFrequencyFeatures:
         features = compute_frequency_features(sample_transactions, SNAPSHOT_DATE)
         assert (features["purchase_frequency_90d"] >= 0).all()
         assert (features["purchase_frequency_180d"] >= 0).all()
+
+    def test_single_transaction_counts_as_one_in_every_window(self):
+        """One purchase 10 days before the cutoff is inside 30, 90, and 180 days."""
+        purchase = SNAPSHOT_DATE - timedelta(days=10)
+        transactions = pd.DataFrame([{
+            "transaction_id": "TXN-EDGE00000001",
+            "customer_id": "CUST-EDGE",
+            "purchase_date": purchase.isoformat(),
+            "order_value": 40.0,
+            "num_items": 3,
+            "payment_method": "credit_card",
+            "channel": "store",
+            "store_id": "STORE-042",
+            "product_category": "Apparel",
+        }])
+        features = compute_frequency_features(transactions, SNAPSHOT_DATE)
+        row = features.iloc[0]
+        assert row["purchase_frequency_30d"] == 1
+        assert row["purchase_frequency_90d"] == 1
+        assert row["purchase_frequency_180d"] == 1
 
     def test_frequency_180d_gte_frequency_90d(self, sample_transactions):
         """180-day frequency must always be >= 90-day frequency."""
@@ -298,7 +315,9 @@ class TestFullFeatureSet:
         active_customer_ids = sample_transactions["customer_id"].unique()
         active_features = features[features["customer_id"].isin(active_customer_ids)]
         null_counts = active_features[self.REQUIRED_FEATURES].isna().sum()
-        # TODO: Assert null_counts.sum() == 0 (implement after deciding on null strategy)
+        # Empty 180-day baskets are filled with 0. A customer who purchased
+        # gets the real aggregate, so none of these columns stay missing.
+        assert null_counts.sum() == 0, f"Null features for active customers: {null_counts.to_dict()}"
 
     def test_output_has_customer_id_column(self, sample_customers, sample_transactions):
         features = build_churn_feature_set(
