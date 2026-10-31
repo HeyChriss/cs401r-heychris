@@ -39,7 +39,11 @@ data "aws_iam_policy_document" "ml_engineer" {
       "sagemaker:ListMlflowApps",
       "sagemaker:CreatePresignedMlflowAppUrl",
       "sagemaker:RegisterModel",
+      "sagemaker:CreateModelPackageGroup",
+      "sagemaker:DescribeModelPackageGroup",
+      "sagemaker:CreateModelPackage",
       "sagemaker:DescribeModelPackage",
+      "sagemaker:UpdateModelPackage",
       "sagemaker:ListModelPackages",
       # A pipeline tags every training job it creates. The Studio statement
       # below allows AddTags only on domains, spaces, and apps.
