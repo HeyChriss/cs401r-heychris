@@ -41,8 +41,26 @@ data "aws_iam_policy_document" "ml_engineer" {
       "sagemaker:RegisterModel",
       "sagemaker:DescribeModelPackage",
       "sagemaker:ListModelPackages",
+      # A pipeline tags every training job it creates. The Studio statement
+      # below allows AddTags only on domains, spaces, and apps.
+      "sagemaker:AddTags",
+      "sagemaker:ListTags",
     ]
     resources = ["*"]
+  }
+
+  # The pipeline runs as this role and starts a training job that uses the
+  # same role. Labs 1-3 started training as the IAM user, so this never came up.
+  statement {
+    sid       = "PassSelfToSageMaker"
+    actions   = ["iam:PassRole"]
+    resources = [aws_iam_role.ml_engineer.arn]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:PassedToService"
+      values   = ["sagemaker.amazonaws.com"]
+    }
   }
 
   statement {
