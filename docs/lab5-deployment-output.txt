@@ -1,0 +1,124 @@
+﻿Lab 5 deployment evidence - account 998631802064
+Batch transform path. Real-time endpoint files are not used.
+
+===== 0. Model Registry: versions and approval status  (2026-11-12T03:26:13Z) =====
+-------------------------------------
+|         ListModelPackages         |
++---+------------+------------------+
+|  1|  Approved  |  1794452309.001  |
++---+------------+------------------+
+
+===== Quota: ml.m5.large for transform job usage (L-236AE59F) =====
+default_quota 0.0
+{
+    "Name": "ml.m5.large for transform job usage",
+    "Value": 8.0
+}
+-------------------------------------------------------------------------------------
+|                      ListRequestedServiceQuotaChangeHistory                       |
++------------------------------------------+------+--------------+------------------+
+|  ml.m5.large for spot training job usage |  5.0 |  CASE_CLOSED |  1790728039.509  |
+|  ml.m5.large for training job usage      |  2.0 |  CASE_CLOSED |  1790727993.366  |
++------------------------------------------+------+--------------+------------------+
+
+===== describe-transform-job incumbent (northstar-churn-incumbent-v2) =====
+{
+    "TransformJobName": "northstar-churn-incumbent-v2",
+    "TransformJobArn": "arn:aws:sagemaker:us-east-1:998631802064:transform-job/northstar-churn-incumbent-v2",
+    "TransformJobStatus": "Completed",
+    "ModelName": "northstar-churn-incumbent",
+    "TransformInput": {
+        "DataSource": {
+            "S3DataSource": {
+                "S3DataType": "ManifestFile",
+                "S3Uri": "s3://northstar-dev-data-998631802064/artifacts/batch/manifest.json"
+            }
+        },
+        "ContentType": "text/csv",
+        "CompressionType": "None",
+        "SplitType": "Line"
+    },
+    "TransformOutput": {
+        "S3OutputPath": "s3://northstar-dev-data-998631802064/artifacts/batch/incumbent-scores/",
+        "Accept": "text/csv",
+        "AssembleWith": "Line",
+        "KmsKeyId": ""
+    },
+    "TransformResources": {
+        "InstanceType": "ml.m5.large",
+        "InstanceCount": 1
+    },
+    "CreationTime": 1794453593.176,
+    "TransformStartTime": 1794453754.171,
+    "TransformEndTime": 1794453864.816,
+    "DataProcessing": {
+        "InputFilter": "$[1:]",
+        "OutputFilter": "$",
+        "JoinSource": "Input"
+    }
+}
+
+===== describe-transform-job candidate (northstar-churn-candidate-v2) =====
+{
+    "TransformJobName": "northstar-churn-candidate-v2",
+    "TransformJobArn": "arn:aws:sagemaker:us-east-1:998631802064:transform-job/northstar-churn-candidate-v2",
+    "TransformJobStatus": "Completed",
+    "ModelName": "northstar-churn-candidate",
+    "TransformInput": {
+        "DataSource": {
+            "S3DataSource": {
+                "S3DataType": "ManifestFile",
+                "S3Uri": "s3://northstar-dev-data-998631802064/artifacts/batch/manifest.json"
+            }
+        },
+        "ContentType": "text/csv",
+        "CompressionType": "None",
+        "SplitType": "Line"
+    },
+    "TransformOutput": {
+        "S3OutputPath": "s3://northstar-dev-data-998631802064/artifacts/batch/candidate-scores/",
+        "Accept": "text/csv",
+        "AssembleWith": "Line",
+        "KmsKeyId": ""
+    },
+    "TransformResources": {
+        "InstanceType": "ml.m5.large",
+        "InstanceCount": 1
+    },
+    "CreationTime": 1794453595.863,
+    "TransformStartTime": 1794453766.925,
+    "TransformEndTime": 1794453879.59,
+    "DataProcessing": {
+        "InputFilter": "$[1:]",
+        "OutputFilter": "$",
+        "JoinSource": "Input"
+    }
+}
+
+===== 2. auto-scaling =====
+Batch path. No endpoint variant is registered, so there is no scalable target and no scaling policy. deployment/configs/scalable-target.json and scaling-policy.json are omitted because the batch instructions say to skip them.
+Each job used ml.m5.large, InstanceCount 1, and stopped billing at Completed.
+Applied transform quota L-236AE59F is 8. The AWS default for that quota is 0. Request history has no separate transform row because the applied value is already 8. Both jobs completed under that quota.
+The 48 h to 60 min compression is docs/lab5-deployment-plan.md section 4.
+
+===== 3. rollback trigger: definition, then the decision =====
+deployment/configs/rollback-alarm.json:
+{
+  "AlarmName": "northstar-churn-rollback",
+  "MetricName": "ScoreDisagreementRate",
+  "Statistic": "Overall",
+  "ComparisonOperator": "GreaterThanThreshold",
+  "Threshold": 0.10,
+  "ProbabilityDelta": 0.05,
+  "Unit": "Rate",
+  "EvaluationPeriods": 1,
+  "Action": "Do not publish the candidate batch output. The incumbent scores remain the production scores."
+}
+Observed ScoreDisagreementRate 0.706 on 9999 customers (absolute probability difference greater than 0.05).
+0.706 > 0.10, so deployment/configs/rollback-action.sh returns ROLLBACK.
+No CloudWatch ModelLatency alarm is used. The unit of this trigger is a rate, not microseconds.
+
+===== 6. after teardown: live API  (2026-11-12T03:59:49Z) =====
+endpoints:        0
+endpoint configs: 0
+scalable targets: 0

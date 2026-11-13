@@ -1,0 +1,27 @@
+{
+  "TransformJobName": "northstar-churn-candidate-v2",
+  "ModelName": "northstar-churn-candidate",
+  "TransformInput": {
+    "DataSource": {
+      "S3DataSource": {
+        "S3DataType": "ManifestFile",
+        "S3Uri": "s3://northstar-dev-data-998631802064/artifacts/batch/manifest.json"
+      }
+    },
+    "ContentType": "text/csv",
+    "SplitType": "Line"
+  },
+  "TransformOutput": {
+    "S3OutputPath": "s3://northstar-dev-data-998631802064/artifacts/batch/candidate-scores/",
+    "Accept": "text/csv",
+    "AssembleWith": "Line"
+  },
+  "DataProcessing": {
+    "InputFilter": "$[1:]",
+    "JoinSource": "Input"
+  },
+  "TransformResources": {
+    "InstanceType": "ml.m5.large",
+    "InstanceCount": 1
+  }
+}

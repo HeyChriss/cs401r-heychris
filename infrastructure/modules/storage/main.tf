@@ -118,5 +118,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "data" {
     expiration {
       days = 7
     }
+
+    # Versioned buckets only hide expired objects. This deletes the old
+    # versions one day later, the shortest interval S3 allows.
+    noncurrent_version_expiration {
+      noncurrent_days = 1
+    }
   }
 }

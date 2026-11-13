@@ -109,6 +109,19 @@ data "aws_iam_policy_document" "ml_engineer" {
     ]
   }
 
+  # Endpoint data capture writes as this role. Without this prefix the
+  # endpoint stays InService and capture produces no objects.
+  statement {
+    sid = "S3DataCaptureWrite"
+    actions = [
+      "s3:PutObject",
+      "s3:AbortMultipartUpload",
+    ]
+    resources = [
+      "arn:aws:s3:::${var.project}-${var.environment}-data-*/datacapture/*",
+    ]
+  }
+
   statement {
     sid = "S3BucketList"
     actions = [

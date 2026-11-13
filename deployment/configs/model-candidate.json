@@ -1,0 +1,7 @@
+{
+  "ModelName": "northstar-churn-candidate",
+  "PrimaryContainer": {
+    "ModelPackageName": "arn:aws:sagemaker:us-east-1:998631802064:model-package/northstar-churn-models/1"
+  },
+  "ExecutionRoleArn": "arn:aws:iam::998631802064:role/northstar-dev-MLEngineer"
+}

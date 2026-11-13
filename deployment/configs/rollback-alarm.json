@@ -1,0 +1,11 @@
+{
+  "AlarmName": "northstar-churn-rollback",
+  "MetricName": "ScoreDisagreementRate",
+  "Statistic": "Overall",
+  "ComparisonOperator": "GreaterThanThreshold",
+  "Threshold": 0.10,
+  "ProbabilityDelta": 0.05,
+  "Unit": "Rate",
+  "EvaluationPeriods": 1,
+  "Action": "Do not publish the candidate batch output. The incumbent scores remain the production scores."
+}
