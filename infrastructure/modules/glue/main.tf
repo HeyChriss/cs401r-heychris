@@ -98,6 +98,7 @@ resource "aws_glue_job" "transform" {
     "--job-language"                     = "python"
     "--job-bookmark-option"              = "job-bookmark-disable"
     "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-metrics"                   = "true"
     "--database_name"                    = aws_glue_catalog_database.this.name
     "--table_name"                       = var.catalog_table_name
     "--output_path"                      = "s3://${var.bucket_name}/${var.processed_customers_prefix}/"
@@ -141,6 +142,7 @@ resource "aws_glue_job" "feature_engineer" {
     "--job-language"                     = "python"
     "--job-bookmark-option"              = "job-bookmark-disable"
     "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-metrics"                   = "true"
     "--input_path"                       = "s3://${var.bucket_name}/${var.processed_customers_prefix}/"
     "--output_path"                      = "s3://${var.bucket_name}/${var.features_customers_prefix}/"
     "--feature_group_name"               = var.feature_group_name

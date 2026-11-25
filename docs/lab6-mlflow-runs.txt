@@ -1,0 +1,20 @@
+northstar-drift on arn:aws:sagemaker:us-east-1:998631802064:mlflow-app/app-Q72BQDF3M7RZ
+mlflow.search_runs(experiment_names=["northstar-drift"])
+
+run_id                               3c0acec668d143a081a85989d0c05a48
+experiment_id                        1
+status                               FINISHED
+run_name                             drift-nsc-evidently-1795632223
+start_time                           2026-11-25 18:56:32.006000+00:00
+end_time                             2026-11-25 18:56:35.125000+00:00
+artifact_uri                         s3://northstar-dev-data-998631802064/artifacts/mlflow/workspaces/default/1/3c0acec668d143a081a85989d0c05a48/artifacts
+params.variant                       champion
+params.baseline_records              9999
+params.captured_records              500
+metrics.psi_days_since_last_purchase 0.157274
+metrics.psi_purchase_frequency_30d   0.080773
+metrics.psi_avg_order_value          0.164914
+metrics.ks_category_diversity_score  0.000002
+metrics.ks_total_spend_90d           5.632970e-15
+metrics.violation_count              2.0
+ui                                   https://mlflow.sagemaker.us-east-1.app.aws/#/experiments/1/runs/3c0acec668d143a081a85989d0c05a48

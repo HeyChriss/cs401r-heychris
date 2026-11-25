@@ -1,4 +1,5 @@
-# MLEngineer (Lab 1), plus DataEngineer and ModelMonitor (Lab 2).
+# MLEngineer (Lab 1), DataEngineer and ModelMonitor (Lab 2),
+# and ModelMonitorExecution (Lab 6).
 # Object writes for MLEngineer stay on artifacts/ and features/, never raw/.
 
 data "aws_iam_policy_document" "assume" {
@@ -150,6 +151,20 @@ data "aws_iam_policy_document" "ml_engineer" {
     ]
     resources = ["*"]
   }
+
+  # Endpoint CPU, memory, and disk metrics are published as this role.
+  # Without this grant the endpoint stays healthy and the namespace stays empty.
+  statement {
+    sid       = "EndpointInstanceMetrics"
+    actions   = ["cloudwatch:PutMetricData"]
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "cloudwatch:namespace"
+      values   = ["/aws/sagemaker/Endpoints"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "ml_engineer" {
@@ -272,6 +287,9 @@ data "aws_iam_policy_document" "data_engineer" {
       "arn:aws:s3:::${var.project}-${var.environment}-data-*/raw/*",
       "arn:aws:s3:::${var.project}-${var.environment}-data-*/processed/*",
       "arn:aws:s3:::${var.project}-${var.environment}-data-*/features/*",
+      # Glue overwrite writes a folder marker at the bucket root, outside the prefixes above.
+      "arn:aws:s3:::${var.project}-${var.environment}-data-*/processed_$folder$",
+      "arn:aws:s3:::${var.project}-${var.environment}-data-*/features_$folder$",
     ]
   }
 
@@ -324,6 +342,19 @@ data "aws_iam_policy_document" "data_engineer" {
       "arn:aws:logs:*:*:log-group:/aws/sagemaker/*",
       "arn:aws:logs:*:*:log-group:/aws/sagemaker/*:log-stream:*",
     ]
+  }
+
+  # Glue --enable-metrics publishes into the Glue namespace as this role.
+  statement {
+    sid       = "GlueJobMetrics"
+    actions   = ["cloudwatch:PutMetricData"]
+    resources = ["*"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "cloudwatch:namespace"
+      values   = ["Glue"]
+    }
   }
 }
 
@@ -432,4 +463,91 @@ resource "aws_iam_policy" "model_monitor" {
 resource "aws_iam_role_policy_attachment" "model_monitor" {
   role       = aws_iam_role.model_monitor.name
   policy_arn = aws_iam_policy.model_monitor.arn
+}
+
+# ModelMonitorExecution runs the Evidently processing job. It is not the
+# ModelMonitor observer: that role cannot write reports or pull the container.
+# This module names buckets with a wildcard, not local.bucket_arn.
+
+data "aws_iam_policy_document" "model_monitor_execution_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["sagemaker.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "model_monitor_execution" {
+  name               = "${var.project}-${var.environment}-ModelMonitorExecution"
+  assume_role_policy = data.aws_iam_policy_document.model_monitor_execution_assume.json
+  description        = "Evidently drift job execution role"
+
+  tags = {
+    Name = "${var.project}-${var.environment}-ModelMonitorExecution"
+  }
+}
+
+data "aws_iam_policy_document" "model_monitor_execution" {
+  statement {
+    sid = "ECRPullProcessingImage"
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "S3BucketList"
+    actions = [
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+    ]
+    resources = ["arn:aws:s3:::${var.project}-${var.environment}-data-*"]
+  }
+
+  statement {
+    sid     = "ReadCaptureBaselineAndCode"
+    actions = ["s3:GetObject"]
+    resources = [
+      "arn:aws:s3:::${var.project}-${var.environment}-data-*/datacapture/*",
+      "arn:aws:s3:::${var.project}-${var.environment}-data-*/monitoring/*",
+    ]
+  }
+
+  statement {
+    sid = "WriteMonitoringReports"
+    actions = [
+      "s3:PutObject",
+      "s3:AbortMultipartUpload",
+    ]
+    resources = ["arn:aws:s3:::${var.project}-${var.environment}-data-*/monitoring/*"]
+  }
+
+  statement {
+    sid = "CloudWatchLogs"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams",
+    ]
+    resources = ["arn:aws:logs:*:*:log-group:/aws/sagemaker/*"]
+  }
+}
+
+resource "aws_iam_policy" "model_monitor_execution" {
+  name        = "${var.project}-${var.environment}-ModelMonitorExecutionPolicy"
+  description = "Evidently drift job: pull the sklearn image, read datacapture and monitoring, write monitoring reports"
+  policy      = data.aws_iam_policy_document.model_monitor_execution.json
+}
+
+resource "aws_iam_role_policy_attachment" "model_monitor_execution" {
+  role       = aws_iam_role.model_monitor_execution.name
+  policy_arn = aws_iam_policy.model_monitor_execution.arn
 }
